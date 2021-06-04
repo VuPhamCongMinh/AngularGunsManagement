@@ -1,0 +1,65 @@
+<form [formGroup]="gunForm" (ngSubmit)="onSubmit(gunForm)">
+  <div fxLayout="column">
+    <input type="hidden" formControlName="id" />
+    <div fxLayout="row" fxLayoutGap="2vw">
+      <mat-form-field fxFlex="50%">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+      <mat-form-field fxFlex="50%">
+        <mat-label>Price</mat-label>
+        <input type="number" matInput formControlName="price" />
+      </mat-form-field>
+    </div>
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="category">
+        <mat-option
+          (change)="onCategoryChange($event)"
+          *ngFor="let category of this.gunService.categories"
+          [value]="category.name"
+        >
+          {{ category.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div
+      fxLayout="row"
+      fxFlex="50%"
+      fxLayoutAlign="center center"
+      *ngIf="imageUrl"
+    >
+      <h1>Ảnh hiện tại ====></h1>
+      <div fxFlexOffset="25"></div>
+      <img mat-card-image fxFlex="45%" src="{{ imageUrl }}" />
+    </div>
+
+    <div fxLayout="row" fxLayoutGap="2vw">
+      <button
+        fxFlex="50%"
+        type="button"
+        mat-raised-button
+        color="primary"
+        (click)="imgPicker.click()"
+      >
+        <mat-icon>insert_photo</mat-icon>
+        UPLOAD IMAGE
+      </button>
+      <input
+        type="file"
+        (change)="onFileChange($event)"
+        [hidden]="true"
+        accept="image/*"
+        #imgPicker
+      />
+      <button fxFlex="50%" type="submit" mat-raised-button color="primary">
+        SUBMIT
+      </button>
+    </div>
+  </div>
+</form>

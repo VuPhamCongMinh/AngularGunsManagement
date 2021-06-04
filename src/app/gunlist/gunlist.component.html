@@ -1,0 +1,10 @@
+<div fxLayout="row" fxFlexOffset="2%" fxLayoutGap="2vw">
+  <ng-container *ngFor="let gun of this.gunService.guns">
+    <app-guncard
+      fxFlex="25%"
+      fxFlex.lt-sm="33%"
+      fxLayoutAlign="center"
+      [gun]="gun"
+    ></app-guncard>
+  </ng-container>
+</div>
