@@ -34,9 +34,9 @@
       fxLayoutAlign="center center"
       *ngIf="imageUrl"
     >
-      <h1>Ảnh hiện tại ====></h1>
-      <div fxFlexOffset="25"></div>
-      <img mat-card-image fxFlex="45%" src="{{ imageUrl }}" />
+      <h2>Ảnh hiện tại ==></h2>
+      <div fxFlexOffset="5%"></div>
+      <img mat-card-image fxFlex="45%" [src]="imageUrl" />
     </div>
 
     <div fxLayout="row" fxLayoutGap="2vw">

@@ -10,17 +10,17 @@ import { Gun } from '../models/gun';
   styles: [],
 })
 export class GunFormComponent implements OnInit {
+  isDisplay: Boolean = false;
+  imageUrl: string = '';
+
   gunForm: FormGroup = this.fb.group({
     id: [''],
     name: ['', Validators.required],
     price: ['', Validators.required],
     description: ['', Validators.required],
     category: ['', Validators.required],
-    imagePath: ['', Validators.required],
+    image: [''],
   });
-
-  isDisplay: Boolean = false;
-  imageUrl: string = '';
 
   constructor(
     @Inject(MAT_DIALOG_DATA) private data: Gun,
@@ -35,7 +35,10 @@ export class GunFormComponent implements OnInit {
   }
 
   onSubmit(form: FormGroup): void {
-    this.gunService.postGun(form.value);
+    if (this.imageUrl) {
+      this.gunService.postGun(form.value);
+      form.reset();
+    }
   }
 
   onCategoryChange(event: Event) {
@@ -50,27 +53,28 @@ export class GunFormComponent implements OnInit {
   onFileChange(event: Event): void {
     const element = event.currentTarget as HTMLInputElement;
     let fileList: FileList | null = element.files;
-    if (fileList) {
+    if (fileList !== null && fileList?.length != 0) {
       const reader = new FileReader();
       reader.onload = () => {
         this.imageUrl = reader.result as string;
       };
       reader.readAsDataURL(fileList[0]);
       this.gunForm.patchValue({
-        imagePath: fileList[0],
+        image: fileList[0],
       });
     }
   }
 
   mapToForm(existGun: Gun): void {
     const { id, name, price, description, category, imagePath } = existGun;
-    this.imageUrl = imagePath;
+    this.imageUrl = imagePath!;
     this.gunForm.patchValue({
       id,
       name,
       price,
       description,
       category,
+      image: this.imageUrl,
     });
   }
 }

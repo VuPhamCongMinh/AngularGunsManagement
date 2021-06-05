@@ -1,16 +1,17 @@
-import { Gun, GunCreateModel } from './../models/gun';
+import { Gun, GunCreateEditModel } from './../models/gun';
 import { Category } from './../models/category';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs/internal/Observable';
-import { finalize, find, map } from 'rxjs/operators';
-import { areAllEquivalent } from '@angular/compiler/src/output/output_ast';
+import { finalize } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GunService {
+  downloadURL: Observable<string> = of('');
   guns: Gun[] = [];
   categories: Category[] = [];
   constructor(
@@ -31,33 +32,42 @@ export class GunService {
     return this.guns.find((x) => x.id === gunId);
   }
 
-  postGun(gunCreateModel: GunCreateModel): void {
+  async postGun(gunCreateModel: GunCreateEditModel): Promise<void> {
     const gunToBeAdd: Gun = {
-      id: this.angularFireStore.createId(),
+      id: gunCreateModel.id ?? this.angularFireStore.createId(),
       name: gunCreateModel.name,
       price: gunCreateModel.price,
       description: gunCreateModel.description,
       category: gunCreateModel.category,
-      imagePath: '',
     };
 
-    console.log(gunCreateModel.image);
-    // const fileRef = this.angularFireStorage.ref(gunCreateModel.image.name);
-    // const uploadTask = this.angularFireStorage.upload(
-    //   gunCreateModel.image.name,
-    //   gunCreateModel.image
-    // );
-    // uploadTask.snapshotChanges().pipe(
-    //   finalize(() =>
-    //     fileRef.getDownloadURL().subscribe((imgUrl) => {
-    //       gunToBeAdd.imagePath = imgUrl;
-    //     })
-    //   )
-    // );
+    if (gunCreateModel.image instanceof File) {
+      const fileRef = this.angularFireStorage.ref(gunCreateModel.image.name);
+      const uploadTask = this.angularFireStorage.upload(
+        gunCreateModel.image.name,
+        gunCreateModel.image
+      );
 
-    // this.angularFireStore
-    //   .collection<Gun>('guns')
-    //   .doc(gunToBeAdd.id)
-    //   .set(gunToBeAdd);
+      await uploadTask
+        .snapshotChanges()
+        .pipe(
+          finalize(() => {
+            this.downloadURL = fileRef.getDownloadURL();
+          })
+        )
+        .toPromise();
+    }
+    const imgUrl = await this.downloadURL.toPromise();
+    if (imgUrl) {
+      gunToBeAdd.imagePath = imgUrl;
+    }
+    this.saveChange(gunToBeAdd);
+  }
+
+  saveChange(gunToBeAdd: Gun) {
+    this.angularFireStore
+      .collection<Gun>('guns')
+      .doc(gunToBeAdd.id)
+      .set(gunToBeAdd, { merge: true });
   }
 }

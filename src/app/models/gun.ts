@@ -4,9 +4,10 @@ export interface Gun {
   description: string;
   price: number;
   category: string;
-  imagePath: string;
+  imagePath?: string;
 }
-export interface GunCreateModel {
+export interface GunCreateEditModel {
+  id: string;
   name: string;
   description: string;
   price: number;
