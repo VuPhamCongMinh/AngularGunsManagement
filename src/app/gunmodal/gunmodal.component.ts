@@ -12,7 +12,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GunModalComponent implements OnInit {
   constructor(
-    public dialog: MatDialog,
+    private dialog: MatDialog,
     private route: ActivatedRoute,
     private router: Router,
     gunService: GunService

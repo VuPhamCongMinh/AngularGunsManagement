@@ -1,10 +1,15 @@
-<div fxLayout="row" fxFlexOffset="2%" fxLayoutGap="2vw">
-  <ng-container *ngFor="let gun of this.gunService.guns">
-    <app-guncard
-      fxFlex="25%"
-      fxFlex.lt-sm="33%"
-      fxLayoutAlign="center"
-      [gun]="gun"
-    ></app-guncard>
-  </ng-container>
+<div style="padding: 2vw">
+  <div
+    fxLayout="row wrap"
+    fxLayoutGap="0.7vw grid"
+    fxLayoutAlign="start stretch"
+  >
+    <ng-container *ngFor="let gun of this.gunService.guns">
+      <app-guncard
+        [gun]="gun"
+        fxFlex="25%"
+        fxLayoutAlign="center"
+      ></app-guncard>
+    </ng-container>
+  </div>
 </div>

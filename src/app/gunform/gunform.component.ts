@@ -1,7 +1,7 @@
 import { GunService } from './../services/gun-service.service';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Gun } from '../models/gun';
 
 @Component({
@@ -14,7 +14,7 @@ export class GunFormComponent implements OnInit {
   imageUrl: string = '';
 
   gunForm: FormGroup = this.fb.group({
-    id: [''],
+    id: [null],
     name: ['', Validators.required],
     price: ['', Validators.required],
     description: ['', Validators.required],
@@ -23,6 +23,7 @@ export class GunFormComponent implements OnInit {
   });
 
   constructor(
+    public dialogRef: MatDialogRef<GunFormComponent>,
     @Inject(MAT_DIALOG_DATA) private data: Gun,
     public gunService: GunService,
     private fb: FormBuilder
@@ -38,6 +39,9 @@ export class GunFormComponent implements OnInit {
     if (this.imageUrl) {
       this.gunService.postGun(form.value);
       form.reset();
+      this.dialogRef.close();
+    } else {
+      alert('Súng gì mà ko có hình vậy ba');
     }
   }
 

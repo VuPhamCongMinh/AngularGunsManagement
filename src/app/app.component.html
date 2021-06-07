@@ -1,9 +1,12 @@
-<div fxLayout fxLayout="column" fxLayoutGap="2vw">
-  <mat-toolbar color="primary">
-    <span>Guns management system</span>
-  </mat-toolbar>
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="sidenav.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Guns management system</span>
+</mat-toolbar>
+<mat-sidenav-container>
+  <mat-sidenav mode="side" #sidenav><app-sidenav></app-sidenav></mat-sidenav>
   <app-gunlist></app-gunlist>
   <router-outlet></router-outlet>
-</div>
-
+</mat-sidenav-container>
 <!-- <app-gunform></app-gunform> -->
