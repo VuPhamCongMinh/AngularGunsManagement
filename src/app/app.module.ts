@@ -10,6 +10,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 
 import { MatButtonModule } from '@angular/material/button';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { GunListComponent } from './gunlist/gunlist.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { AngularFireModule } from '@angular/fire';
@@ -58,7 +59,9 @@ import { SidenavComponent } from './sidenav/sidenav.component';
     MatDialogModule,
     MatSidenavModule,
     MatListModule,
+    MatPaginatorModule,
     AngularFireStorageModule,
+
     AngularFireDatabaseModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
   ],

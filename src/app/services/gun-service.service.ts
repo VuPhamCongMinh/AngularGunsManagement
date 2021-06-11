@@ -6,22 +6,37 @@ import { Observable } from 'rxjs/internal/Observable';
 import { finalize } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { of } from 'rxjs';
+import Pagination from '../models/pagination';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GunService {
+  private nextDocCursor: any;
+  private prevDocCursor: any;
+  private prevPageStack: any[] = [];
   downloadURL: Observable<string> = of('');
   guns: Gun[] = [];
+  pagination: Pagination;
   categories: Category[] = [];
   constructor(
     private angularFireStore: AngularFirestore,
     private angularFireStorage: AngularFireStorage
   ) {
-    angularFireStore
-      .collection<Gun>('guns')
-      .valueChanges({ idField: 'id' })
-      .subscribe((x) => (this.guns = x));
+    this.angularFireStore
+      .collection<Gun>('guns', (ref) => ref.orderBy('name').limit(2))
+      .snapshotChanges()
+      .subscribe((x) => {
+        this.nextDocCursor = x[x.length - 1].payload.doc;
+        this.prevDocCursor = x[0].payload.doc;
+        this.prevPageStack.push(this.prevDocCursor);
+
+        this.guns = x.map((g) => {
+          return {
+            ...g.payload.doc.data(),
+          } as Gun;
+        });
+      });
     angularFireStore
       .collection<Category>('categories')
       .valueChanges()
@@ -64,6 +79,56 @@ export class GunService {
     this.saveChange(gunToBeAdd);
   }
 
+  getGunsPagination(): void {}
+
+  next(): void {
+    if (!this.nextDocCursor) return;
+
+    this.angularFireStore
+      .collection<Gun>('guns', (ref) =>
+        ref.orderBy('name').limit(2).startAfter(this.nextDocCursor)
+      )
+      .snapshotChanges()
+      .subscribe((x) => {
+        if (x.length) {
+          this.nextDocCursor = x[x.length - 1].payload.doc;
+          this.prevDocCursor = x[0].payload.doc;
+          this.prevPageStack.push(this.prevDocCursor);
+
+          this.guns = x.map((g) => {
+            return {
+              ...g.payload.doc.data(),
+            } as Gun;
+          });
+        }
+      });
+  }
+
+  prev(): void {
+    if (this.prevPageStack.length <= 1) return;
+
+    this.prevPageStack.pop();
+
+    this.prevDocCursor = this.prevPageStack[this.prevPageStack.length - 1];
+    this.angularFireStore
+      .collection<Gun>('guns', (ref) =>
+        ref.orderBy('name').limit(2).startAt(this.prevDocCursor)
+      )
+      .snapshotChanges()
+      .subscribe((x) => {
+        if (x) {
+          this.nextDocCursor = x[x.length - 1].payload.doc;
+          this.prevDocCursor = x[0].payload.doc;
+          // this.prevPageStack.push(this.prevDocCursor);
+
+          this.guns = x.map((g) => {
+            return {
+              ...g.payload.doc.data(),
+            } as Gun;
+          });
+        }
+      });
+  }
   saveChange(gunToBeAdd: Gun) {
     this.angularFireStore
       .collection<Gun>('guns')
