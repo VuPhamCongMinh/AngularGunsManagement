@@ -6,7 +6,6 @@ import { Observable } from 'rxjs/internal/Observable';
 import { finalize } from 'rxjs/operators';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { of } from 'rxjs';
-import Pagination from '../models/pagination';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +16,6 @@ export class GunService {
   private prevPageStack: any[] = [];
   downloadURL: Observable<string> = of('');
   guns: Gun[] = [];
-  pagination: Pagination;
   categories: Category[] = [];
   constructor(
     private angularFireStore: AngularFirestore,
